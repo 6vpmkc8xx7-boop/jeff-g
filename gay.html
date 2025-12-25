@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>JEFF Survival</title>
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: linear-gradient(90deg,
+    #ff9a9e,
+    #fad0c4,
+    #fbc2eb,
+    #a18cd1,
+    #84fab0,
+    #8fd3f4);
+}
+
+#hud {
+  padding: 12px;
+  color: white;
+  font-size: 18px;
+  background: rgba(0,0,0,0.35);
+}
+
+#game {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 50px);
+}
+
+.enemy {
+  position: absolute;
+  font-size: 26px;
+  user-select: none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="hud">
+  🍸 生存時間：<span id="time">0</span>秒
+</div>
+<div id="game"></div>
+
+<script>
+// ===== 起動確認 =====
+alert("JEFF 起動！");
+
+const game = document.getElementById("game");
+const timeEl = document.getElementById("time");
+
+let time = 0;
+let alive = true;
+
+const names = [
+  "けいた",
+  "まつ",
+  "さおりん",
+  "のぶ",
+  "ゆたかさん",
+  "すすむ",
+  "ひろゆき",
+  "りょうた",
+  "山田大地",
+  "こじらせゆうき",
+  "サバシオ",
+  "淳平"
+];
+
+// ⏱ 生存時間
+setInterval(() => {
+  if (!alive) return;
+  time++;
+  timeEl.textContent = time;
+}, 1000);
+
+// 👤 常連出現
+function spawnEnemy() {
+  if (!alive) return;
+
+  const e = document.createElement("div");
+  e.className = "enemy";
+  e.textContent = names[Math.floor(Math.random() * names.length)];
+
+  e.style.left = Math.random() * (window.innerWidth - 80) + "px";
+  e.style.top = "-40px";
+
+  game.appendChild(e);
+
+  let y = -40;
+  const fall = setInterval(() => {
+    if (!alive) {
+      clearInterval(fall);
+      e.remove();
+      return;
+    }
+
+    y += 2;
+    e.style.top = y + "px";
+
+    if (y > window.innerHeight) {
+      clearInterval(fall);
+      gameOver();
+    }
+  }, 16);
+
+  e.addEventListener("touchstart", () => {
+    e.remove();
+    clearInterval(fall);
+  });
+}
+
+// 💀 ゲームオーバー
+function gameOver() {
+  alive = false;
+  alert("💥 ママゆうじに怒られた！\n生存時間：" + time + "秒");
+  location.reload();
+}
+
+// ⏳ 出現ループ
+setInterval(spawnEnemy, 1200);
+</script>
+
+</body>
+</html>
